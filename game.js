@@ -1,114 +1,142 @@
-var canvas = document.getElementById("canvas"); //Получение холста из DOM
-var ctx = canvas.getContext("2d"); //Получение контекста — через него можно работать с холстом
+window.onload = init;
 
-var scale = 0.1; //Масштаб мусора
+var map;
+var ctxMap;
+var drawBtn;
+var clearBtn;
 
-Resize(); // При загрузке страницы задаётся размер холста
+var player;
+var ctxPlayer;
 
-class Sea
+var gameWidth = 800;
+var gameHight = 500;
+
+var background = new Image();
+background.src = "back.png";
+
+var tiles = new Image();
+tiles.src = "SpriteSheet.png";
+
+var pl;
+var enemy;
+
+var isPlaying;
+
+var requestAnimationFrame = window.requestAnimationFrame ||
+                              window.webkitRequestAnimationFrame  ||
+                              window.mozRequestAnimationFrame  ||
+                              window.msRequestAnimationFrame;
+
+function init()
 {
-    constructor(image, x)
-    {
-        this.x = x;
-        this.y = 0;
- 
-        this.image = new Image();
-        
-        this.image.src = image;
-    }
-    Update(seas) 
-    {
-        this.x += speed; //При обновлении изображение смещается вправо
- 
-        if(this.x > window.innerWidth) //Если изображение ушло за край холста, то меняем положение
-        {
-            this.x = seas.x - this.image.width + speed; //Новое положение указывается с учётом второго фона
-        }
-    }
+	map = document.getElementById("map");
+	ctxMap = map.getContext("2d");
+
+	player = document.getElementById("player");
+	ctxPlayer = player.getContext("2d");
+
+	map.width = gameWidth;
+	map.height = gameHight;
+	player.width = gameWidth;
+	player.height = gameHight;
+
+	drawBtn = document.getElementById("drawBtn");
+	clearBtn = document.getElementById("clearBtn");
+
+	drawBtn.addEventListener("click", drawRect, false);
+	clearBtn.addEventListener("click", clearRect, false);
+
+	pl = new Player();
+	enemy = new Enemy();
+
+	drawBg();
+
+	startloop();
 }
 
-window.addEventListener("resize", Resize); //При изменении размеров окна будут меняться размеры холста
- 
-window.addEventListener("keydown", function (e) { KeyDown(e); }); //Получение нажатий с клавиатуры
- 
-var objects = []; //Массив игровых объектов
-
-var sea = 
-[
-	new Sea("back.png", 0),
-    new Sea("back.png", 768)
-]; //Массив с фонами
-
-var player = null; //Объект, которым управляет игрок (номер объекта в массиве objects)
- 
-function Start()
+function loop()
 {
-    timer = setInterval(Update, 1000 / 60); //Состояние игры обновляется 60 раз в секунду
+	if (isPlaying)
+	{
+		draw();
+		update();
+		requestAnimationFrame(loop);
+	}
+
 }
- 
-function Stop()
+
+function startloop ()
 {
-    clearInterval(timer); //Остановка обновления
+	isPlaying = true;
+	loop ();
 }
- 
-function Update() //Обновление игры
-{	sea[0].Update(sea[1]);
-    sea[1].Update(sea[0]);
- 
-    Draw();
-}
- 
-function Draw() //Работа с графикой
+
+function stoploop ()
 {
-    ctx.clearRect(0, 0, canvas.width, canvas.height); //Очистка холста от предыдущего кадра
+	isPlaying = false;
 
-    for(var i = 0; i < sea.length; i++)
-    {
-        ctx.drawImage
-        (
-            sea[i].image, //Изображение для отрисовки
-            0, //Начальное положение по оси X на изображении
-            0, //Начальное положение по оси Y на изображении
-            sea[i].image.width, //Ширина изображения
-            sea[i].image.height, //Высота изображения
-            sea[i].x, //Положение по оси X на холсте
-            sea[i].y, //Положение по оси Y на холсте
-            canvas.width, //Ширина изображения на холсте
-            canvas.width //Так как ширина и высота фона одинаковые, в качестве высоты указывается ширина
-        );
-    }
 }
 
-
-
-function KeyDown(e)
+function draw()
 {
-    switch(e.keyCode)
-    {
-        case 37: //Влево
-            break;
- 
-        case 39: //Вправо
-            break;
- 
-        case 38: //Вверх
-            break;
- 
-        case 40: //Вниз
-            break;
- 
-        case 27: //Esc
-            break;
-    }
+	pl.draw();
+	enemy.draw();
 }
 
-
-function Resize()
+function update()
 {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+
 }
 
+function Player()
+{
+	this.srcX = 0;
+	this.srcY = 0;
+	this.drawX = 0;
+	this.drawY = 0;
+	this.width = 45;
+	this.height = 90;
 
+	this.speed = 5;
+}
 
+function Enemy()
+{
+	this.srcX = 0;
+	this.srcY = 89;
+	this.drawX = 700;
+	this.drawY = 50;
+	this.width = 60;
+	this.height = 35;
 
+	this.speed = 8;
+}
+
+Enemy.prototype.draw = function ()
+{
+	ctxMap.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
+		this.drawX, this.drawY, this.width, this.height);
+}
+
+Player.prototype.draw = function ()
+{
+	ctxMap.drawImage(tiles, this.srcX, this.srcY, 60, 80,
+		this.drawX, this.drawY, this.width, this.height);
+}
+
+function drawRect ()
+{
+  ctxMap.fillStyle = "#fff";
+  ctxMap.fillRect(10, 10, 100, 100);
+}
+
+function clearRect ()
+{
+	ctxMap.clearRect(0, 0, 800, 500);
+}
+
+function drawBg ()
+{
+	ctxMap.drawImage(background, 0, 0, 768, 192,
+		0, 0, map.width, map.height);
+}
