@@ -8,6 +8,9 @@ var clearBtn;
 var player;
 var ctxPlayer;
 
+var enemyCv;
+var ctxEnemy;
+
 var gameWidth = 1000;
 var gameHight = 500;
 
@@ -35,10 +38,15 @@ function init()
 	player = document.getElementById("player");
 	ctxPlayer = player.getContext("2d");
 
+	enemyCv = document.getElementById("enemy");
+	ctxEnemy = enemyCv.getContext("2d");
+
 	map.width = gameWidth;
 	map.height = gameHight;
 	player.width = gameWidth;
 	player.height = gameHight;
+	enemyCv.width = gameWidth;
+	enemyCv.height = gameHight;
 
 	drawBtn = document.getElementById("drawBtn");
 	clearBtn = document.getElementById("clearBtn");
@@ -90,6 +98,7 @@ function draw()
 function update()
 {
 	pl.update();
+	enemy.update();
 
 }
 
@@ -112,19 +121,25 @@ function Player()
 function Enemy()
 {
 	this.srcX = 0;
-	this.srcY = 89;
+	this.srcY = 256;
 	this.drawX = 700;
 	this.drawY = 50;
-	this.width = 60;
-	this.height = 35;
+	this.width = 21;
+	this.height = 70;
 
 	this.speed = 8;
 }
 
 Enemy.prototype.draw = function ()
 {
-	ctxMap.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
+	clearCtxEnemy();
+	ctxEnemy.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
 		this.drawX, this.drawY, this.width, this.height);
+}
+
+Enemy.prototype.update = function ()
+{
+	this.drawX -= 1;
 }
 
 Player.prototype.draw = function ()
@@ -221,6 +236,11 @@ function clearRect ()
 function clearCtxPlayer()
 {
 	ctxPlayer.clearRect(0, 0, gameWidth, gameHight)
+}
+
+function clearCtxEnemy()
+{
+	ctxEnemy.clearRect(0, 0, gameWidth, gameHight)
 }
 
 function drawBg ()
