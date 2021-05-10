@@ -11,6 +11,9 @@ var ctxPlayer;
 var enemyCv;
 var ctxEnemy;
 
+var enemy2Cv;
+var ctxEnemy2;
+
 var fishCv;
 var ctxFish;
 
@@ -26,12 +29,6 @@ var ctxScore;
 var gameWidth = 1000;
 var gameHight = 500;
 
-var x = gameWidth/3;
-var y = gameHight/2;
-
-var stepCount = 0; //кол-во шагов в одном напралении
-var direction; // направление движения
-
 var background = new Image();
 background.src = "back.png";
 
@@ -42,15 +39,18 @@ var tiles = new Image();
 tiles.src = "SpriteSheet.png";
 
 var pl;
+var en;
 var enemies = [];
 var fishes = [];
 var fire = [];
+var enemy2;
 
 var count_fire = -1;
 
 var isPlaying;
 var health=3;
 var score = 0;
+var damage = 0;
 
 var mapX = 0;
 var map1X = gameWidth;
@@ -75,6 +75,9 @@ function init()
 	enemyCv = document.getElementById("enemy");
 	ctxEnemy = enemyCv.getContext("2d");
 
+	enemy2Cv = document.getElementById("enemy2");
+	ctxEnemy2 = enemy2Cv.getContext("2d");
+
 	fishCv = document.getElementById("fish");
 	ctxFish = fishCv.getContext("2d");
 
@@ -93,6 +96,8 @@ function init()
 	player.height = gameHight;
 	enemyCv.width = gameWidth;
 	enemyCv.height = gameHight;
+	enemy2Cv.width = gameWidth;
+	enemy2Cv.height = gameHight;
 	stats.width = gameWidth;
 	stats.height = gameHight;
 	stats_score.width = gameWidth;
@@ -116,6 +121,7 @@ function init()
 
 
 	pl = new Player();
+	en = new Enemy2();
 
 	resetHealth();
 
@@ -205,6 +211,9 @@ function draw()
 	{
 		fire[i].draw(); 
 	}
+
+	if(score >= 150)
+		en.draw();
 }
 
 function update()
@@ -213,6 +222,9 @@ function update()
 	drawBg();
 	updateStats();
 	pl.update();
+
+	if(score >= 150)
+		en.update();
 
 	for (var i = 0; i < enemies.length; i++)
 	{
@@ -272,8 +284,8 @@ function Enemy2()
 {
 	this.srcX = 0;
 	this.srcY = 355;
-	this.drawX = Math.floor(Math.random()*gameWidth) + gameWidth;
-	this.drawY = Math.floor(Math.random()*gameHight);
+	this.drawX = gameWidth+40;
+	this.drawY = gameHight/2;
 	this.width = 50;
 	this.height = 140;
 
@@ -287,6 +299,13 @@ Enemy.prototype.draw = function ()
 		this.drawX, this.drawY, this.width, this.height);
 }
 
+Enemy2.prototype.draw = function ()
+{
+	clearCtxEnemy2();
+	ctxEnemy2.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
+		this.drawX, this.drawY, this.width, this.height);
+}
+
 Enemy.prototype.update = function ()
 {
 	this.drawX -= 2;
@@ -294,6 +313,19 @@ Enemy.prototype.update = function ()
 	{
 		this.drawX = Math.floor(Math.random()*gameWidth) + gameWidth;
 	    this.drawY = Math.floor(Math.random()*gameHight);
+	}
+}
+
+Enemy2.prototype.update = function ()
+{
+	this.drawX -= 2;
+	if (damage = 3){
+		alert("YOU WIN, CONGRATULATIONS!", score);
+		document.reload();
+	}
+	if (this.drawX + this.width < 0) 
+	{
+		isPlaying = false;
 	}
 }
 
@@ -343,8 +375,8 @@ Fire.prototype.update = function ()
 			for (var j=0; j < enemies.length; j++){
     		    if (fire[i].drawX >= enemies[j].drawX &&
     		    fire[i].drawY >= enemies[j].drawY &&
-    		    fire[i].drawX <= enemies[j].drawX + fishes[i].width &&
-    		    fire[i].drawY <= enemies[j].drawY + fishes[i].height)
+    		    fire[i].drawX <= enemies[j].drawX + enemies[i].width &&
+    		    fire[i].drawY <= enemies[j].drawY + enemies[i].height)
     		    {
     			    enemies.splice(j, 1);
     			    score += 10;
@@ -353,9 +385,23 @@ Fire.prototype.update = function ()
     			    continue;
     	        }
     	    }
+    	    if (score >= 150 && en.drawX <= gameWidth){
+			//for (var i=0; i < fire.length; i++){
+				if (fire[i].drawX >= en.drawX &&
+    		        fire[i].drawY >= en.drawY &&
+    		        fire[i].drawX <= en.drawX + en.width &&
+    		        fire[i].drawY <= en.drawY + en.height)
+    		    {
+    			damage += 1;
+    			//fire.splice(i, 1);
+		        //continue;
+    	        }
+			//}	
+		}
 		}
 		if(fire[i].drawX >= gameWidth)
 			fire.splice(i, 1);
+		
     }
 }
 
@@ -520,6 +566,11 @@ function clearRect ()
 function clearCtxPlayer()
 {
 	ctxPlayer.clearRect(0, 0, gameWidth, gameHight);
+}
+
+function clearCtxEnemy2()
+{
+	ctxEnemy2.clearRect(0, 0, gameWidth, gameHight);
 }
 
 function clearCtxEnemy()
