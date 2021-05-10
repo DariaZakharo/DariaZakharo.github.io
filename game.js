@@ -14,11 +14,23 @@ var ctxEnemy;
 var fishCv;
 var ctxFish;
 
+var fireCv;
+var ctxFire;
+
 var stats;
 var ctxStats;
 
+var stats_score;
+var ctxScore;
+
 var gameWidth = 1000;
 var gameHight = 500;
+
+var x = gameWidth/3;
+var y = gameHight/2;
+
+var stepCount = 0; //кол-во шагов в одном напралении
+var direction; // направление движения
 
 var background = new Image();
 background.src = "back.png";
@@ -32,9 +44,13 @@ tiles.src = "SpriteSheet.png";
 var pl;
 var enemies = [];
 var fishes = [];
+var fire = [];
+
+var count_fire = -1;
 
 var isPlaying;
-var health;
+var health=3;
+var score = 0;
 
 var mapX = 0;
 var map1X = gameWidth;
@@ -62,8 +78,14 @@ function init()
 	fishCv = document.getElementById("fish");
 	ctxFish = fishCv.getContext("2d");
 
+	fireCv = document.getElementById("fire");
+	ctxFire = fireCv.getContext("2d");
+
 	stats = document.getElementById("stats");
 	ctxStats = stats.getContext("2d");
+
+	stats_score = document.getElementById("stats_score");
+	ctxScore = stats_score.getContext("2d");
 
 	map.width = gameWidth;
 	map.height = gameHight;
@@ -73,11 +95,18 @@ function init()
 	enemyCv.height = gameHight;
 	stats.width = gameWidth;
 	stats.height = gameHight;
+	stats_score.width = gameWidth;
+	stats_score.height = gameHight;
 	fishCv.width = gameWidth;
 	fishCv.height = gameHight;
+	fireCv.width = gameWidth;
+	fireCv.height = gameHight;
 
 	ctxStats.fillStyle = "#FEC200";
 	ctxStats.font = "bold 15pt Arial"
+
+	ctxScore.fillStyle = "#FEC200";
+	ctxScore.font = "bold 15pt Arial"
 
 	drawBtn = document.getElementById("drawBtn");
 	clearBtn = document.getElementById("clearBtn");
@@ -101,7 +130,7 @@ function init()
 
 function resetHealth()
 {
-	health = 3;
+
 }
 
 function spawnEnemy(count)
@@ -171,6 +200,11 @@ function draw()
 	{
 		fishes[i].draw(); 
 	}
+	clearCtxFire();
+	for (var i = 0; i < fire.length; i++)
+	{
+		fire[i].draw(); 
+	}
 }
 
 function update()
@@ -187,6 +221,10 @@ function update()
 	for (var i = 0; i < fishes.length; i++)
 	{
 		fishes[i].update(); 
+	}
+	for (var i = 0; i < fire.length; i++)
+	{
+		fire[i].update(); 
 	}
 
 }
@@ -240,6 +278,7 @@ function Enemy2()
 	this.speed = 5;
 }
 
+
 Enemy.prototype.draw = function ()
 {
 	ctxEnemy.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
@@ -273,6 +312,51 @@ function Fish()
 	this.speed = 5;
 }
 
+function Fire()
+{
+	this.srcX = 0;
+	this.srcY = 443;
+	this.drawX = pl.drawX+45;
+	this.drawY = pl.drawY+45;
+	this.width = 12;
+	this.height = 12;
+
+	this.speed = 4;
+
+	this.isfire = false;
+}
+
+Fire.prototype.draw = function ()
+{
+	ctxFire.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
+		this.drawX, this.drawY, this.width, this.height);
+}
+
+Fire.prototype.update = function ()
+{
+	this.drawX += 8;
+
+	for (var i=0; i < fire.length; i++){
+		if (fire[i].drawX < gameWidth){
+			for (var j=0; j < enemies.length; j++){
+    		    if (fire[i].drawX >= enemies[j].drawX &&
+    		    fire[i].drawY >= enemies[j].drawY &&
+    		    fire[i].drawX <= enemies[j].drawX + fishes[i].width &&
+    		    fire[i].drawY <= enemies[j].drawY + fishes[i].height)
+    		    {
+    			    enemies.splice(j, 1);
+    			    score += 10;
+    			    enemies[enemies.length] = new Enemy();
+    			    //fire.splice(i, 1);
+    			    continue;
+    	        }
+    	    }
+		}
+		if(fire[i].drawX >= gameWidth)
+			fire.splice(i, 1);
+    }
+}
+
 Fish.prototype.draw = function ()
 {
 	ctxFish.drawImage(tiles, this.srcX, this.srcY, this.width, this.height,
@@ -287,6 +371,7 @@ Fish.prototype.update = function ()
 		this.drawX = Math.floor(Math.random()*gameWidth) + gameWidth;
 	    this.drawY = Math.floor(Math.random()*gameHight);
 	}
+
 }
 
 Fish.prototype.destroy = function()
@@ -303,21 +388,20 @@ Player.prototype.draw = function ()
 
 Player.prototype.update = function ()
 {
-	//if (health == 0)
-		//isPlaying= false; 
+	if (health <= 0)
+		isPlaying= false; 
 
 	if (this.drawX < 0) this.drawX = 0;
 	if (this.drawX > gameWidth - this.width) this.drawX = gameWidth - this.width;
 	if (this.drawY > gameHight - this.height) this.drawY = gameHight - this.height;
 	if (this.drawY < 0) this.drawY = 0;
 
-
     for (var i=0; i < fishes.length; i++)
     {
     	if (this.drawX >= fishes[i].drawX &&
     		this.drawY >= fishes[i].drawY &&
-    		this.drawX <= fishes[i].width &&
-    		this.drawY <= fishes[i].height)
+    		this.drawX <= fishes[i].drawX + fishes[i].width &&
+    		this.drawY <= fishes[i].drawY + fishes[i].height)
     	{
     		health -= 1;
     	}
@@ -337,6 +421,7 @@ Player.prototype.chooseDir = function ()
 	if(this.isRight)
 		this.drawX += this.speed;
 }
+
 
 function checkKeyDown (e)
 {
@@ -361,6 +446,12 @@ function checkKeyDown (e)
 	if (keyChar == "A")
 	{
 		pl.isLeft = true;
+		e.preventDefault();
+	}
+	if (keyChar == "Q")
+	{
+		fire[fire.length] = new Fire();
+		fire[fire.length-1].isfire = true;
 		e.preventDefault();
 	}
 
@@ -389,6 +480,11 @@ function checkKeyUp (e)
 	if (keyChar == "A")
 	{
 		pl.isLeft = false;
+		e.preventDefault();
+	}
+	if (keyChar == "Q")
+	{
+		pl.isfire = false;
 		e.preventDefault();
 	}
 
@@ -421,10 +517,17 @@ function clearCtxFish()
 	ctxFish.clearRect(0, 0, gameWidth, gameHight);
 }
 
+function clearCtxFire()
+{
+	ctxFire.clearRect(0, 0, gameWidth, gameHight);
+}
+
 function updateStats()
 {
 	ctxStats.clearRect(0, 0, gameWidth, gameHight);
 	ctxStats.fillText("ЖИЗНИ: " + health, 10, 30);
+	ctxScore.clearRect(0, 0, gameWidth, gameHight);
+	ctxScore.fillText("ОЧКИ: " + score, 10, 60);
 }
 
 function drawBg ()
