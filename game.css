@@ -30,7 +30,7 @@ body, html
     margin: 30px auto 0px;
 }
 
-#player, #enemy, #stats, #fish
+#player, #enemy, #stats, #fish, #fire, #stats_score
 {
     display: block;
     margin: -500px auto 0px;
