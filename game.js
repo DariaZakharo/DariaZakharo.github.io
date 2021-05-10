@@ -252,6 +252,8 @@ function Player()
 	this.isDown = false;
 	this.isRight = false;
 	this.isLeft = false;
+
+	this.invisibility = false;
 }
 
 function Enemy()
@@ -396,18 +398,32 @@ Player.prototype.update = function ()
 	if (this.drawY > gameHight - this.height) this.drawY = gameHight - this.height;
 	if (this.drawY < 0) this.drawY = 0;
 
-    for (var i=0; i < fishes.length; i++)
-    {
-    	if (this.drawX >= fishes[i].drawX &&
-    		this.drawY >= fishes[i].drawY &&
-    		this.drawX <= fishes[i].drawX + fishes[i].width &&
-    		this.drawY <= fishes[i].drawY + fishes[i].height)
-    	{
-    		health -= 1;
-    	}
-    }
+    if (pl.invisibility == false)
+    	CheckPlace();
 
 	this.chooseDir();
+}
+
+
+function changeInvisibility()
+{
+	pl.invisibility = false;
+}
+
+function CheckPlace()
+{
+	for (var i=0; i < fishes.length; i++)
+    {
+    	if (pl.drawX >= fishes[i].drawX &&
+    		pl.drawY >= fishes[i].drawY &&
+    		pl.drawX <= fishes[i].drawX + fishes[i].width &&
+    		pl.drawY <= fishes[i].drawY + fishes[i].height)
+    	{
+    		health -= 1;
+    		pl.invisibility = true;
+    		setTimeout(changeInvisibility, 30000);
+    	}
+    }
 }
 
 Player.prototype.chooseDir = function ()
