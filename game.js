@@ -139,7 +139,6 @@ function init()
 
 	document.addEventListener("keydown", checkKeyDown, false);
 	document.addEventListener("keyup", checkKeyUp, false);
-	document.addEventListener("mousemove", mouseMoveHandler, false);
 }
 
 function spawnEnemy(count)
@@ -290,7 +289,7 @@ function Enemy2()
 	this.drawX = gameWidth+40;
 	this.drawY = gameHight/2;
 	this.width = 50;
-	this.height = 140;
+	this.height = 100;
 
 	this.speed = 5;
 }
@@ -322,9 +321,9 @@ Enemy.prototype.update = function ()
 Enemy2.prototype.update = function ()
 {
 	this.drawX -= 2;
-	if (damage = 3){
-		alert("YOU WIN, CONGRATULATIONS!", score);
-		document.location.reload();
+	if (damage == 3){
+		alert("Вы победили! Ваш счет: "+(score));
+		document.location.replace('menu.html');
 	}
 	if (this.drawX + this.width < 0) 
 	{
@@ -439,8 +438,11 @@ Player.prototype.draw = function ()
 
 Player.prototype.update = function ()
 {
-	if (health <= 0)
-		isPlaying= false; 
+	if (health == 0){
+		alert("Вы проиграли! Ваш счет: "+(score));
+		isPlaying = false;
+		document.location.replace('menu.html');
+	}
 
 	if (this.drawX < 0) this.drawX = 0;
 	if (this.drawX > gameWidth - this.width) this.drawX = gameWidth - this.width;
