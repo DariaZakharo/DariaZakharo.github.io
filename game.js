@@ -26,6 +26,8 @@ var ctxStats;
 var stats_score;
 var ctxScore;
 
+var control = localStorage.getItem('controlType');
+
 var gameWidth = 1000;
 var gameHight = 500;
 
@@ -63,6 +65,11 @@ var requestAnimationFrame = window.requestAnimationFrame ||
                               window.webkitRequestAnimationFrame  ||
                               window.mozRequestAnimationFrame  ||
                               window.msRequestAnimationFrame;
+
+const GAMESTATE = {
+  MENU: 2,
+  GAMEOVER: 3
+};                              
 
 function init()
 {
@@ -123,7 +130,7 @@ function init()
 	pl = new Player();
 	en = new Enemy2();
 
-	resetHealth();
+	
 
 	spawnFishes(5);
 	spawnEnemy(8);
@@ -132,11 +139,7 @@ function init()
 
 	document.addEventListener("keydown", checkKeyDown, false);
 	document.addEventListener("keyup", checkKeyUp, false);
-}
-
-function resetHealth()
-{
-
+	document.addEventListener("mousemove", mouseMoveHandler, false);
 }
 
 function spawnEnemy(count)
@@ -321,7 +324,7 @@ Enemy2.prototype.update = function ()
 	this.drawX -= 2;
 	if (damage = 3){
 		alert("YOU WIN, CONGRATULATIONS!", score);
-		document.reload();
+		document.location.reload();
 	}
 	if (this.drawX + this.width < 0) 
 	{
@@ -447,7 +450,7 @@ Player.prototype.update = function ()
     if (pl.invisibility == false)
     	CheckPlace();
 
-	this.chooseDir();
+    this.chooseDir();
 }
 
 
@@ -474,14 +477,21 @@ function CheckPlace()
 
 Player.prototype.chooseDir = function ()
 {
-	if(this.isUp)
-		this.drawY -= this.speed;
-	if(this.isDown)
-		this.drawY += this.speed;
-	if(this.isLeft)
-		this.drawX -= this.speed;
-	if(this.isRight)
-		this.drawX += this.speed;
+	if (control == 'wasd')
+		{
+			if(this.isUp)
+				this.drawY -= this.speed;
+			if(this.isDown)
+				this.drawY += this.speed;
+			if(this.isLeft)
+				this.drawX -= this.speed;
+			if(this.isRight)
+				this.drawX += this.speed;
+		}
+	else if (control == 'mouse')
+	{
+
+	}
 }
 
 

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name = "viewport" content = "width=device-width">
+	<meta charset="UTF-8">
+	<title>Clean Ocean Game</title>
+	<link rel="preconnect" href="https://fonts.gstatic.com">
+	<link href="https://fonts.googleapis.com/css2?family=Raleway&display=swap" rel="stylesheet">
+	<style type="text/css" >
+		body{background: white;}
+		.menu{
+			background-color: #2C3AB8;
+			height: 440px;
+			width: 700px;
+			display: block;
+			margin: auto;
+			text-align: center;
+			padding: 10px;
+		}
+		h3{
+			margin-left: -350px;
+			color: white;
+			font-weight: bold;
+			font-size: 18px;
+		}
+		.type{
+			margin-top: -30px;
+			margin-left: 250px;
+			margin-bottom: 100px;
+			text-align: center;
+			font-size: 18px;
+			
+		}
+		#wasd{
+			width: 100px;
+			float: left;
+			padding: 4px;
+			margin-left: 30px;
+			cursor: pointer;
+			color: #FFFFFF;
+			border: 1px solid #FFFFFF;
+		}
+		#wasd:active{
+			width: 100px;
+			float: left;
+			padding: 4px;
+			margin-left: 30px;
+			cursor: pointer;
+			background-color: white;
+			color: #2C3AB8;
+		}
+		#mouse{
+			width: 100px;
+			float: left;
+			padding: 4px;
+			margin-left: 30px;
+			cursor: pointer;
+			color: #FFFFFF;
+			border: 1px solid #FFFFFF;
+		}
+		#mouse:active{
+			width: 100px;
+			float: left;
+			padding: 4px;
+			margin-left: 30px;
+			cursor: pointer;
+			background-color: white;
+			color: #2C3AB8;
+		}
+		.caption{
+			padding: 5px;
+			background-color: #2C3AB8;
+			margin: -5px;
+			color: white;
+		}
+		.play{
+			width: 350px;
+			margin-left: auto;
+			margin-right: auto;
+			padding: 5px;
+			margin-top: 20px;
+			border: 3px solid #FFFFFF;
+			color: white;
+		}
+		.play:hover{
+			padding: 5px;
+			margin-left: auto;
+			margin-right: auto;
+			margin-top: 10px;
+			background-color: white;
+			color: #2C3AB8;
+			border-radius: 5px;
+		}
+	</style>
+</head>
+<body>
+<div class="menu">
+	<div class="caption">
+		<h1>Clean Ocean Game</h1>
+	</div>
+	<div><img src="robot.png" alt="Игрок"></div>
+	<div class="optionControl">
+		<h3>Тип управления: </h3>
+	<div class="type">
+		<div id="wasd" onclick="localStorage.setItem('controlType', 'wasd');">
+		Клавиаутра</div>
+		<div id="mouse" onclick="localStorage.setItem('controlType', 'mouse');">
+		Мышка</div>
+	</div>
+	</div>
+	<div class="play" onclick="document.location = 'zakharo_game.html'">
+		<h2>Играть</h2>
+	</div>
+</div>
+</body>
+</html>
